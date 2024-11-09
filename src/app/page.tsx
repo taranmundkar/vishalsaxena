@@ -354,10 +354,10 @@ export default function LandingPage() {
               </div>
               <div className="mt-6 text-center text-xs text-gray-600">
                 <p>
-                  &copy; 2024 <a href="https://basmapreston.royallepage.ca/" target="_blank" rel="noopener noreferrer" className="hover:underline">Basma Preston</a>. All rights reserved.
+                  &copy; 2024 <a href="https://teamvishal.ca/residential-properties?property_type=Residential" target="_blank" rel="noopener noreferrer" className="hover:underline">Vishal Saxena</a>. All rights reserved.
                 </p>
                 <p className="mt-1">
-                  <a href="https://basmapreston.royallepage.ca/privacy.php" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:underline">Privacy Policy</a>
+                  <a href="https://teamvishal.ca/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:underline">Privacy Policy</a>
                 </p>
               </div>
             </div>
@@ -403,7 +403,7 @@ export default function LandingPage() {
                     />
                     <span className="ml-2 text-xs text-gray-700">
                       I consent to submitting my information and agree to the{' '}
-                      <a href="https://basmapreston.royallepage.ca/privacy.php" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">
+                      <a href="https://teamvishal.ca/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">
                         Privacy Policy
                       </a>
                       .
@@ -524,7 +524,7 @@ export default function LandingPage() {
                 A confirmation email has been sent to your provided email address with further details.
               </p>
               <a
-                href="https://api.leadconnectorhq.com/widget/booking/31YgU38p4ekBuHTebfV9"
+                href="https://api.leadconnectorhq.com/widget/booking/rcuY2nOYTJYGxkewJ7an"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-4 py-2 text-sm border border-gray-300 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -555,10 +555,10 @@ export default function LandingPage() {
         </div>
         <footer className="mt-6 text-center text-xs text-gray-700 drop-shadow">
           <p>
-            &copy; 2024 <a href="https://basmapreston.royallepage.ca/" target="_blank" rel="noopener noreferrer" className="hover:underline">Basma Preston</a>. All rights reserved.
+            &copy; 2024 <a href="https://teamvishal.ca/residential-properties?property_type=Residential" target="_blank" rel="noopener noreferrer" className="hover:underline">Vishal Saxena</a>. All rights reserved.
           </p>
           <p className="mt-1">
-            <a href="https://basmapreston.royallepage.ca/privacy.php" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">Privacy Policy</a>
+            <a href="https://teamvishal.ca/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">Privacy Policy</a>
           </p>
         </footer>
       </main>
