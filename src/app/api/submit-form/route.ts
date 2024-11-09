@@ -48,10 +48,10 @@ async function getSheets(): Promise<sheets_v4.Sheets> {
 }
 
 const SHEET_IDS = {
-  buy: '1DO_gLNJnUKK5aRSW7NeuFurWUbC6_mq7O_R4YoN1vI4',
-  sell: '1WjcZ1h_a9DUZv-RvKe6Gx6Hy8TF4AVyA-reKFOBgaYg',
-  rent: '15egXqR6RUnYU_OB_olzgmq93qeAagj8J94GK7xcmwc4'
-} as const;
+  buy: '1iyX-81lCSs6u9NFg4qu0g9GpJ1LBha1VKlQOJppLTs8',
+  sell: '1Mp1i2RUzuAm5IYWyq5erKDTqhw9uBiqU3sK1KJc5Pi0',
+  rent: '15XZrPHqFxUkA3cFNECV-jNO8y_CZTPpM5wCWgAzw1yg'
+};
 
 type FormValue = string | string[] | number | boolean | null | undefined;
 
@@ -97,50 +97,27 @@ export async function POST(req: Request) {
 
     const processedData = Object.entries(otherData).map(([key, value]) => {
       const processedValue = preprocessValue(value);
-      console.log(`Processed ${key}:`, processedValue);
-      return processedValue;
-    });
+      return `${key}: ${processedValue}`;
+    }).join(' | ');
 
     const values = [
-      [
-        new Date().toISOString(),
-        preprocessValue(name),
-        preprocessValue(email),
-        preprocessValue(phoneNumber),
-        ...processedData
-      ],
+      [new Date().toISOString(), name, email, phoneNumber, processedData]
     ];
 
-    console.log(`Appending data to Google Sheet for ${userType}...`);
-    console.log('Preprocessed values:', JSON.stringify(values, null, 2));
-
-    const response = await sheets.spreadsheets.values.append({
+    console.log('Appending data to sheet...');
+    await sheets.spreadsheets.values.append({
       spreadsheetId: sheetId,
-      range: 'A1',
+      range: 'A:E',
       valueInputOption: 'USER_ENTERED',
-      requestBody: { values },
+      requestBody: {
+        values: values
+      }
     });
+    console.log('Data appended successfully');
 
-    console.log(`Data successfully appended to Google Sheet for ${userType}`);
-    return NextResponse.json({ success: true, data: response.data });
-
-  } catch (error: unknown) {
+    return NextResponse.json({ success: true });
+  } catch (error) {
     console.error('Error in form submission:', error);
-
-    let errorMessage = 'An unexpected error occurred';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-
-    console.error('Detailed error:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal Server Error',
-        message: errorMessage
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'An error occurred while submitting the form' }, { status: 500 });
   }
 }
