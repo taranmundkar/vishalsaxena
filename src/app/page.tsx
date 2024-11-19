@@ -530,7 +530,7 @@ export default function LandingPage() {
                 className="inline-block px-4 py-2 text-sm border border-gray-300 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 Click To Speak With An Expert
-              </button>
+              </a>
               <button
                 onClick={() => {
                   setUserType(null)
