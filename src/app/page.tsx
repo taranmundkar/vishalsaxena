@@ -23,7 +23,7 @@ export default function LandingPage() {
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [overallProgress, setOverallProgress] = useState(0);
 
-  // New state for personal information
+  // State for personal information
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
@@ -33,13 +33,13 @@ export default function LandingPage() {
     {
       id: 'budget',
       question: 'What is your budget for buying a home? (Select all that apply)',
-      options: ['$200,000-$400,000', '$400,000-$600,000', '$600,000-$800,000', '$800,000-$1,000,000', '$1,000,000-$1,500,000', '$1,500,000-$2,000,000', '$2,000,000+'],
+      options: ['$150,000-$250,000', '$250,000-$350,000', '$350,000-$450,000', '$450,000-$550,000', '$550,000-$650,000', '$650,000-$750,000', '$750,000-$850,000', '$850,000-$950,000', '$1,000,000+'],
       multiple: true,
     },
     {
       id: 'homeType',
       question: 'What type of home are you interested in? (Select all that apply)',
-      options: ['Single-family detached', 'Semi-detached', 'Townhouse', 'Condo/Apartment', 'Duplex', 'Bungalow', 'Split-level', 'Cottage/Cabin', 'Mobile home', 'Luxury estate'],
+      options: ['Single Family', 'Semi-Detached', 'Townhouse', 'Condo/Apartment', 'Duplex', 'Bungalow', 'Split-Level', 'Cottage/Cabin', 'Two Apartment', 'Luxury Estate'],
       multiple: true,
     },
     {
@@ -78,7 +78,7 @@ export default function LandingPage() {
     {
       id: 'propertyType',
       question: 'What type of property are you selling?',
-      options: ['Single-family home', 'Condo', 'Townhouse', 'Multi-family home', 'Other'],
+      options: ['Single-Family Home', 'Condo', 'Townhouse', 'Multi-Family Home', 'Other'],
     },
     {
       id: 'bedrooms',
@@ -298,7 +298,7 @@ export default function LandingPage() {
         <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-6">
           {!userType ? (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-700 mb-3 text-center">Personal Information</h2>
+              <h2 className="text-xl font-semibold text-gray-700 mb-3 text-center">Enter Your Information Below To Get Access to Exclusive Listings</h2>
               <div className="space-y-4">
                 <input
                   type="text"
@@ -507,7 +507,7 @@ export default function LandingPage() {
                 onClick={handleFinalSubmit}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2  focus:ring-offset-2 focus:ring-gray-500"
               >
-                Confirm and Submit
+                Click Here To Get Access Now
               </button>
             </div>
           ) : isFinalSubmitted ? (
@@ -529,8 +529,8 @@ export default function LandingPage() {
                 rel="noopener noreferrer"
                 className="inline-block px-4 py-2 text-sm border border-gray-300 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
-                Book Your Appointment
-              </a>
+                Click To Speak With An Expert
+              </button>
               <button
                 onClick={() => {
                   setUserType(null)
