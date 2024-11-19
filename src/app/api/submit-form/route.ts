@@ -1,3 +1,4 @@
+// src/app/api/submit-form/route.ts
 import { google, sheets_v4 } from 'googleapis';
 import { NextResponse } from 'next/server';
 import { JWT } from 'google-auth-library';
@@ -76,11 +77,11 @@ type FormData = {
   [key: string]: FormValue;
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   console.log('Received form submission request');
 
   try {
-    const body = await req.json() as FormData;
+    const body = await request.json() as FormData;
     console.log('Received form data:', JSON.stringify(body, null, 2));
 
     console.log('Getting Sheets API...');
@@ -116,9 +117,9 @@ export async function POST(req: Request) {
 
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: sheetId,
-      range: 'A2', // Changed from 'A1' to 'A2' to start from the second row
+      range: 'A2',
       valueInputOption: 'USER_ENTERED',
-      insertDataOption: 'INSERT_ROWS', // This ensures new data is inserted as new rows
+      insertDataOption: 'INSERT_ROWS',
       requestBody: { values },
     });
 
