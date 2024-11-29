@@ -1,8 +1,9 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js'
+import Script from 'next/script'
 
 type Question = {
   id: string;
@@ -10,6 +11,12 @@ type Question = {
   options?: string[];
   type?: string;
   multiple?: boolean;
+}
+
+declare global {
+  interface Window {
+    fbq: any;
+  }
 }
 
 export default function LandingPage() {
@@ -20,14 +27,25 @@ export default function LandingPage() {
   const [isVerifying, setIsVerifying] = useState(false)
   const [isFinalSubmitted, setIsFinalSubmitted] = useState(false)
   const [editingField, setEditingField] = useState<string | null>(null)
-  const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
-  const [overallProgress, setOverallProgress] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<string[]>([])
+  const [overallProgress, setOverallProgress] = useState(0)
 
   // State for personal information
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [phoneError, setPhoneError] = useState('')
+
+  useEffect(() => {
+    // Initialize Facebook Pixel
+    if (typeof window !== 'undefined') {
+      window.fbq = window.fbq || function() {
+        (window.fbq.q = window.fbq.q || []).push(arguments)
+      };
+      window.fbq('init', '887470725021363');
+      window.fbq('track', 'PageView');
+    }
+  }, []);
 
   const buyQuestions: Question[] = [
     {
@@ -160,47 +178,47 @@ export default function LandingPage() {
     setUserType(type)
     setStep(0)
     setAnswers({})
-    setOverallProgress(0);
-    setSelectedAnswers([]);
+    setOverallProgress(0)
+    setSelectedAnswers([])
   }
 
   const handleAnswer = (answer: string) => {
-    const currentQuestion = questions[step];
+    const currentQuestion = questions[step]
     if (currentQuestion.multiple) {
       const updatedAnswers = selectedAnswers.includes(answer)
         ? selectedAnswers.filter(a => a !== answer)
-        : [...selectedAnswers, answer];
-      setSelectedAnswers(updatedAnswers);
-      setAnswers({ ...answers, [currentQuestion.id]: updatedAnswers });
+        : [...selectedAnswers, answer]
+      setSelectedAnswers(updatedAnswers)
+      setAnswers({ ...answers, [currentQuestion.id]: updatedAnswers })
     } else {
-      setSelectedAnswers([answer]);
-      setAnswers({ ...answers, [currentQuestion.id]: answer });
+      setSelectedAnswers([answer])
+      setAnswers({ ...answers, [currentQuestion.id]: answer })
       if (step < questions.length - 1) {
-        setStep(step + 1);
-        setSelectedAnswers([]);
-        setOverallProgress(((step + 1) / questions.length) * 100);
+        setStep(step + 1)
+        setSelectedAnswers([])
+        setOverallProgress(((step + 1) / questions.length) * 100)
       } else {
-        setOverallProgress(100);
+        setOverallProgress(100)
       }
     }
-  };
+  }
 
   const handleBack = () => {
     if (step > 0) {
-      setStep(step - 1);
-      const newAnswers = { ...answers };
+      setStep(step - 1)
+      const newAnswers = { ...answers }
       delete newAnswers[questions[step].id]
-      setAnswers(newAnswers);
-      setOverallProgress(((step - 1) / questions.length) * 100);
-      setSelectedAnswers(Array.isArray(answers[questions[step - 1].id]) ? answers[questions[step - 1].id] as string[] : []);
+      setAnswers(newAnswers)
+      setOverallProgress(((step - 1) / questions.length) * 100)
+      setSelectedAnswers(Array.isArray(answers[questions[step - 1].id]) ? answers[questions[step - 1].id] as string[] : [])
     } else {
-      setUserType(null);
-      setStep(0);
-      setAnswers({});
-      setSelectedAnswers([]);
-      setOverallProgress(0);
+      setUserType(null)
+      setStep(0)
+      setAnswers({})
+      setSelectedAnswers([])
+      setOverallProgress(0)
     }
-  };
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -221,7 +239,8 @@ export default function LandingPage() {
   }
 
   const handleFinalSubmit = async () => {
-    console.log('Form submitted:', { name, email, phoneNumber, userType, ...answers })
+    const formData = { name, email, phoneNumber, userType, ...answers }
+    console.log('Submitting form data:', formData)
     
     try {
       const response = await fetch('/api/submit-form', {
@@ -229,25 +248,22 @@ export default function LandingPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name,
-          email,
-          phoneNumber,
-          userType,
-          ...answers,
-        }),
-      });
+        body: JSON.stringify(formData),
+      })
 
-      const data = await response.json();
+      const data = await response.json()
+      console.log('Response from server:', data)
 
       if (response.ok && data.success) {
-        setIsFinalSubmitted(true);
+        setIsFinalSubmitted(true)
+        // Track form submission event
+        window.fbq('track', 'Lead', formData);
       } else {
-        throw new Error(data.error || 'Unknown error occurred');
+        throw new Error(data.error || 'Unknown error occurred')
       }
     } catch (error: unknown) {
-      console.error('Error submitting form:', error);
-      alert(`There was an error submitting your form. Please try again. ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      console.error('Error submitting form:', error)
+      alert(`There was an error submitting your form. Please try again. ${error instanceof Error ? error.message : 'Unknown error occurred'}`)
     }
   }
 
@@ -284,6 +300,33 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative">
+      <Script
+        id="fb-pixel"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '887470725021363');
+            fbq('track', 'PageView');
+          `,
+        }}
+      />
+      <noscript>
+        <Image
+          height="1"
+          width="1"
+          style={{ display: 'none' }}
+          src="https://www.facebook.com/tr?id=887470725021363&ev=PageView&noscript=1"
+          alt=""
+        />
+      </noscript>
       <Image
         src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pexels-falling4utah-2724749-Wqoqy2VN0WoWhfNdnux6HuiDgs6nsI.jpg"
         alt="Modern white kitchen with island"
@@ -354,10 +397,10 @@ export default function LandingPage() {
               </div>
               <div className="mt-6 text-center text-xs text-gray-600">
                 <p>
-                  &copy; 2024 <a href="https://teamvishal.ca/residential-properties?property_type=Residential" target="_blank" rel="noopener noreferrer" className="hover:underline">Vishal Saxena</a>. All rights reserved.
+                  &copy; 2024 <a href="http://inottawarealtor.ca" target="_blank" rel="noopener noreferrer" className="hover:underline">Jason Scott</a>. All rights reserved.
                 </p>
                 <p className="mt-1">
-                  <a href="https://teamvishal.ca/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:underline">Privacy Policy</a>
+                  <a href="https://blog.remax.ca/privacy-notice/?_gl=1*1jywjtq*_ga*NzU5MTA1MDM2LjE3MzIwNDI4Nzc.*_ga_1K2F9Z3PBF*MTczMjA0Mjg3Ny4xLjAuMTczMjA0Mjg4MC41Ny4wLjE5ODgyOTU3ODI" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:underline">Privacy Policy</a>
                 </p>
               </div>
             </div>
@@ -403,7 +446,7 @@ export default function LandingPage() {
                     />
                     <span className="ml-2 text-xs text-gray-700">
                       I consent to submitting my information and agree to the{' '}
-                      <a href="https://teamvishal.ca/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">
+                      <a href="https://blog.remax.ca/privacy-notice/?_gl=1*1jywjtq*_ga*NzU5MTA1MDM2LjE3MzIwNDI4Nzc.*_ga_1K2F9Z3PBF*MTczMjA0Mjg3Ny4xLjAuMTczMjA0Mjg4MC41Ny4wLjE5ODgyOTU3ODI" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">
                         Privacy Policy
                       </a>
                       .
@@ -434,14 +477,14 @@ export default function LandingPage() {
                     onClick={() => {
                       if (currentQuestion.multiple) {
                         if (selectedAnswers.length > 0) {
-                          setStep(step + 1);
-                          setSelectedAnswers([]);
-                          setOverallProgress(((step + 2) / questions.length) * 100);
+                          setStep(step + 1)
+                          setSelectedAnswers([])
+                          setOverallProgress(((step + 2) / questions.length) * 100)
                         }
                       } else {
-                        setStep(step + 1);
-                        setSelectedAnswers([]);
-                        setOverallProgress(((step + 2) / questions.length) * 100);
+                        setStep(step + 1)
+                        setSelectedAnswers([])
+                        setOverallProgress(((step + 2) / questions.length) * 100)
                       }
                     }}
                     disabled={!isAnswered || (currentQuestion.multiple && selectedAnswers.length === 0)}
@@ -524,7 +567,7 @@ export default function LandingPage() {
                 A confirmation email has been sent to your provided email address with further details.
               </p>
               <a
-                href="https://api.leadconnectorhq.com/widget/booking/rcuY2nOYTJYGxkewJ7an"
+                href="https://api.leadconnectorhq.com/widget/booking/ihSe2StWiDkiP1jfbWat"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-4 py-2 text-sm border border-gray-300 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -539,12 +582,12 @@ export default function LandingPage() {
                   setConsent(false)
                   setIsVerifying(false)
                   setIsFinalSubmitted(false)
-                  setOverallProgress(0);
-                  setSelectedAnswers([]);
-                  setName('');
-                  setEmail('');
-                  setPhoneNumber('');
-                  setPhoneError('');
+                  setOverallProgress(0)
+                  setSelectedAnswers([])
+                  setName('')
+                  setEmail('')
+                  setPhoneNumber('')
+                  setPhoneError('')
                 }}
                 className="mt-4 px-4 py-2 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
@@ -555,10 +598,10 @@ export default function LandingPage() {
         </div>
         <footer className="mt-6 text-center text-xs text-gray-700 drop-shadow">
           <p>
-            &copy; 2024 <a href="https://teamvishal.ca/residential-properties?property_type=Residential" target="_blank" rel="noopener noreferrer" className="hover:underline">Vishal Saxena</a>. All rights reserved.
+            &copy; 2024 <a href="http://inottawarealtor.ca" target="_blank" rel="noopener noreferrer" className="hover:underline">Jason Scott</a>. All rights reserved.
           </p>
           <p className="mt-1">
-            <a href="https://teamvishal.ca/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">Privacy Policy</a>
+            <a href="https://blog.remax.ca/privacy-notice/?_gl=1*1jywjtq*_ga*NzU5MTA1MDM2LjE3MzIwNDI4Nzc.*_ga_1K2F9Z3PBF*MTczMjA0Mjg3Ny4xLjAuMTczMjA0Mjg4MC41Ny4wLjE5ODgyOTU3ODI" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:underline">Privacy Policy</a>
           </p>
         </footer>
       </main>
