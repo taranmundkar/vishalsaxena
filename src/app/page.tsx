@@ -13,9 +13,20 @@ type Question = {
   multiple?: boolean;
 }
 
+// Define proper types for Facebook Pixel
+type FacebookPixelEvent = 'init' | 'track' | 'trackCustom';
+interface FacebookPixel {
+  (event: FacebookPixelEvent, eventName: string, params?: Record<string, unknown>): void;
+  q?: unknown[];
+  loaded?: boolean;
+  version?: string;
+  push?: (...args: unknown[]) => void;
+}
+
 declare global {
   interface Window {
-    fbq: any;
+    fbq: FacebookPixel;
+    _fbq: FacebookPixel;
   }
 }
 
@@ -37,11 +48,21 @@ export default function LandingPage() {
   const [phoneError, setPhoneError] = useState('')
 
   useEffect(() => {
-    // Initialize Facebook Pixel
+    // Initialize Facebook Pixel with proper typing
     if (typeof window !== 'undefined') {
-      window.fbq = window.fbq || function() {
-        (window.fbq.q = window.fbq.q || []).push(arguments)
-      };
+      window.fbq = function(...args: unknown[]) {
+        if (!window.fbq.q) {
+          window.fbq.q = [];
+        }
+        window.fbq.q.push(args);
+      } as FacebookPixel;
+      
+      if (!window._fbq) {
+        window._fbq = window.fbq;
+      }
+      
+      window.fbq.loaded = true;
+      window.fbq.version = '2.0';
       window.fbq('init', '887470725021363');
       window.fbq('track', 'PageView');
     }
@@ -256,8 +277,8 @@ export default function LandingPage() {
 
       if (response.ok && data.success) {
         setIsFinalSubmitted(true)
-        // Track form submission event
-        window.fbq('track', 'Lead', formData);
+        // Track form submission event with proper typing
+        window.fbq('track', 'Lead', formData as Record<string, unknown>);
       } else {
         throw new Error(data.error || 'Unknown error occurred')
       }
