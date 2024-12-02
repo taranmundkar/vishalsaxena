@@ -50,17 +50,17 @@ export default function LandingPage() {
   useEffect(() => {
     // Initialize Facebook Pixel with proper typing
     if (typeof window !== 'undefined') {
-      window.fbq = function(...args: unknown[]) {
+      window.fbq = function (...args: unknown[]) {
         if (!window.fbq.q) {
           window.fbq.q = [];
         }
         window.fbq.q.push(args);
       } as FacebookPixel;
-      
+
       if (!window._fbq) {
         window._fbq = window.fbq;
       }
-      
+
       window.fbq.loaded = true;
       window.fbq.version = '2.0';
       window.fbq('init', '887470725021363');
@@ -262,7 +262,7 @@ export default function LandingPage() {
   const handleFinalSubmit = async () => {
     const formData = { name, email, phoneNumber, userType, ...answers }
     console.log('Submitting form data:', formData)
-    
+
     try {
       const response = await fetch('/api/submit-form', {
         method: 'POST',
@@ -588,7 +588,7 @@ export default function LandingPage() {
                 A confirmation email has been sent to your provided email address with further details.
               </p>
               <a
-                href="https://api.leadconnectorhq.com/widget/booking/ihSe2StWiDkiP1jfbWat"
+                href="https://api.leadconnectorhq.com/widget/booking/rcuY2nOYTJYGxkewJ7an"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-4 py-2 text-sm border border-gray-300 rounded-md text-white bg-gray-700 hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
